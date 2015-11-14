@@ -5,10 +5,10 @@ class Piece():
 		self.color = color
 		self.type = kind
 		self.coords = (0,0)
+		self.moved = 0
 
 		path = color + "_" + kind + ".jpg"
 		img = Image.open(path)
 		img = img.resize((50, 50), Image.ANTIALIAS)
 		self.image = ImageTk.PhotoImage(img)
 
-	

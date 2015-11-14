@@ -3,12 +3,11 @@ from PIL import Image, ImageTk
 from piece import Piece
 from chessboard import BoardState
 class GameBoard(tk.Frame):
-    def __init__(self, parent, size=64):
+    def __init__(self, parent, size=70):
         self.size = size
         self.board_state = BoardState()
         self.move_data = {"x": 0, "y": 0, "item": None}
         self.counter = 2
-
 
         tk.Frame.__init__(self, parent)
         self.canvas = tk.Canvas(self, width=8*size, height=8*size)
@@ -26,6 +25,8 @@ class GameBoard(tk.Frame):
         self.move_data["y"] = event.y
 
     def OnPieceMotion(self, event):
+        if (self.move_data["item"] < 2):
+            return
         delta_x = event.x - self.move_data["x"]
         delta_y = event.y - self.move_data["y"]
         self.canvas.move(self.move_data["item"], delta_x, delta_y)
@@ -34,21 +35,29 @@ class GameBoard(tk.Frame):
 
     def OnPieceButtonRelease(self, event):
         counter = self.move_data["item"]
+        if (counter < 2):
+            return
 
-        row = int(self.move_data["y"]/self.size)
-        column = int(self.move_data["x"]/self.size)
+        startrow = self.board_state.pieces[counter].coords[0]
+        startcolumn = self.board_state.pieces[counter].coords[1]
 
-        if (row < 0 or column < 0 or row > 7 or column > 7 
-            or self.board_state.board[row][column] is not 0):
-            print"you cannot move to that square"
-            row = self.board_state.pieces[counter].coords[0]
-            column = self.board_state.pieces[counter].coords[1]
+        endrow = int(self.move_data["y"]/self.size)
+        endcolumn = int(self.move_data["x"]/self.size)
+
+        if (endrow < 0 or endcolumn <0 or endcolumn > 7 or endrow >7
+        or endrow is startrow and endcolumn is startcolumn):
+            self.MovePiece(counter, startrow, startcolumn)
+            return
+
+        occupied = self.board_state.board[endrow][endcolumn]
+
+        if (self.board_state.move(startrow, startcolumn, endrow, endcolumn)):
+            if (occupied  is not 0):
+                self.canvas.delete(occupied)
+            self.MovePiece(counter, endrow, endcolumn)
+            self.board_state.pieces[counter].moved+=1
         else:
-            x = self.board_state.pieces[counter].coords[0]
-            y = self.board_state.pieces[counter].coords[1]
-            self.board_state.board[x][y] = 0
-            self.board_state.board[row][column] = counter
-        self.MovePiece(counter, row,column)
+            self.MovePiece(counter, startrow, startcolumn)
 
     def AddPiece(self, piece, row=0, column=0):
         if (self.board_state.board[row][column] is not 0):
