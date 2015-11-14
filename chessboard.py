@@ -5,7 +5,7 @@ class BoardState():
 		self.pieces = {}
 		self.board = [[0 for x in range(8)] for x in range(8)] 
 
-	def move(self, startrow, startcolumn, endrow, endcolumn):
+	def Move(self, startrow, startcolumn, endrow, endcolumn):
 
 		if ((endrow, endcolumn) not in self.GetValidMovements(startrow, startcolumn)):
 			return False

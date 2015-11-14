@@ -51,7 +51,7 @@ class GameBoard(tk.Frame):
 
         occupied = self.board_state.board[endrow][endcolumn]
 
-        if (self.board_state.move(startrow, startcolumn, endrow, endcolumn)):
+        if (self.board_state.Move(startrow, startcolumn, endrow, endcolumn)):
             if (occupied  is not 0):
                 self.canvas.delete(occupied)
             self.MovePiece(counter, endrow, endcolumn)
@@ -78,7 +78,7 @@ class GameBoard(tk.Frame):
         self.canvas.coords(counter, x0, y0)
 
 
-    def fill_board(self):
+    def FillBoard(self):
         for i in range(8):
             self.AddPiece(Piece("black", "pawn"), 1, i)
             self.AddPiece(Piece("white", "pawn"), 6, i)
@@ -112,6 +112,6 @@ if __name__ == "__main__":
     chessboard = chessboard.resize((board.size*8, board.size*8), Image.ANTIALIAS)
     chessboard = ImageTk.PhotoImage(chessboard)
     board.canvas.create_image(board.size*4,board.size*4,image=chessboard)
-    board.fill_board()
+    board.FillBoard()
     root.mainloop()
 
