@@ -57,6 +57,7 @@ class GameBoard(tk.Frame):
         if (self.board_state.Move(startrow, startcolumn, endrow, endcolumn)):
             if (occupied  is not 0):
                 self.canvas.delete(occupied)
+                del self.board_state.pieces[occupied] 
             self.MovePiece(counter, endrow, endcolumn)
             self.board_state.pieces[counter].moved+=1
             self.turn = True if self.turn is False else False

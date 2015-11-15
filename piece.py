@@ -6,7 +6,6 @@ class Piece():
 		self.type = kind
 		self.coords = (0,0)
 		self.moved = 0
-
 		path = color + "_" + kind + ".gif"
 		self.image = tk.PhotoImage(file = path)
 
