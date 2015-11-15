@@ -11,7 +11,6 @@ class BoardState():
 			return False
 
 		startsquare = self.board[startrow][startcolumn]
-		endsquare = self.board[endrow][endcolumn]
 
 		self.board[startrow][startcolumn] = 0
 		self.board[endrow][endcolumn] = startsquare

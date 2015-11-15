@@ -7,8 +7,11 @@ class Piece():
 		self.coords = (0,0)
 		self.moved = 0
 
-		path = color + "_" + kind + ".jpg"
-		img = Image.open(path)
-		img = img.resize((50, 50), Image.ANTIALIAS)
-		self.image = ImageTk.PhotoImage(img)
+		path = color + "_" + kind + ".gif"
+		self.image = tk.PhotoImage(file = path)
 
+	def ChangePawnToQueen(self):
+		self.type = "queen"
+		path = self.color + "_" + "queen" + ".gif"
+		self.image = tk.PhotoImage(file = path)
+		return self.image
