@@ -61,7 +61,8 @@ class GameBoard(tk.Frame):
         else:
             self.MovePiece(counter, startrow, startcolumn)
 
-        #if (self.board_state.turn is "black"):
+        if (self.board_state.turn is "black"):
+            ai.MakeMove(self.board_state, self)
 
 
     def AddPiece(self, piece, row=0, column=0):
