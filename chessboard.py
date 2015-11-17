@@ -1,139 +1,43 @@
 from piece import Piece
+import movements
 
 class BoardState():
-	def __init__(self):
+	def __init__(self, turn = "white"):
 		self.pieces = {}
 		self.board = [[0 for x in range(8)] for x in range(8)] 
+		self.turn = turn
+		self.children = set()
 
 	def Move(self, startrow, startcolumn, endrow, endcolumn):
+		if (endrow < 0 or endcolumn <0 or endcolumn > 7 or endrow >7 or endrow is startrow and endcolumn is startcolumn):
+			return False, 0
 
-		if ((endrow, endcolumn) not in self.GetValidMovements(startrow, startcolumn)):
-			return False
+		if ((endrow, endcolumn) not in movements.GetValidMovements(self, startrow, startcolumn)):
+			return False, 0
 
 		startsquare = self.board[startrow][startcolumn]
+		endsquare = self.board[endrow][endcolumn]
 
-		self.board[startrow][startcolumn] = 0
-		self.board[endrow][endcolumn] = startsquare
-		return True
+		color = self.pieces[startsquare].color
+		if (color is not self.turn):
+			return False, 0
 
-	def GetValidMovements(self, row, column):
-		piece = self.pieces[self.board[row][column]]
-		moves = list()
+		if (endsquare is not 0):
+			del self.pieces[endsquare]
 
-		if (piece.type is "knight"):
-			moves.append((row+2, column+1))
-			moves.append((row+2, column-1))
-			moves.append((row-2, column+1))
-			moves.append((row-2, column-1))
-			moves.append((row+1, column+2))
-			moves.append((row+1, column-2))
-			moves.append((row-1, column+2))
-			moves.append((row-1, column-2))
+		neighbour = BoardState()
 
-		if (piece.type is "king"):
-			moves.append((row+1, column+1))
-			moves.append((row+1, column-1))
-			moves.append((row+1, column))
-			moves.append((row-1, column+1))
-			moves.append((row-1, column-1))
-			moves.append((row-1, column))
-			moves.append((row, column-1))
-			moves.append((row, column+1))
 
-		if (piece.type is "bishop" or piece.type is "queen"):
-			for i in range (1,8):
-				if (row+i > 7 or column+i>7):
-					break
-				moves.append((row+i, column+i))
-				if (self.board[row+i][column+i] is not 0):
-					break
-			for i in range (1,8):
-				if (row-i<0 or column+i>7):
-					break
-				moves.append((row-i, column+i))
-				if (self.board[row-i][column+i] is not 0):
-					break
-			for i in range (1,8):
-				if (row-i < 0 or column-i < 0):
-					break
-				moves.append((row-i, column-i))
-				if (self.board[row-i][column-i] is not 0):
-					break
-			for i in range (1,8):
-				if (row+i > 7 or column-i < 0):
-					break
-				moves.append((row+i, column-i))
-				if (self.board[row+i][column-i] is not 0):
-					break
+		neighbour.parent = self
+		neighbour.board = [x[:] for x in self.board]
+		neighbour.pieces = self.pieces.copy()
+		neighbour.turn = "black" if self.turn is "white" else "white"
+		neighbour.board[startrow][startcolumn] = 0
+		neighbour.board[endrow][endcolumn] = startsquare
+		neighbour.pieces[startsquare].moved+=1
 
-		if (piece.type is "rook" or piece.type is "queen"):
-			for i in range (1,8):
-				if (row+i > 7):
-					break
-				moves.append((row+i, column))
-				if (self.board[row+i][column] is not 0):
-					break
-			for i in range (1,8):
-				if (row-i<0):
-					break
-				moves.append((row-i, column))
-				if (self.board[row-i][column] is not 0):
-					break
-			for i in range (1,8):
-				if (column-i < 0):
-					break
-				moves.append((row, column-i))
-				if (self.board[row][column-i] is not 0):
-					break
-			for i in range (1,8):
-				if (column+i > 7):
-					break
-				moves.append((row, column+i))
-				if (self.board[row][column+i] is not 0):
-					break
+		return neighbour, endsquare
 
-		elif(piece.type is "pawn"):
-			if (piece.color is "black"):
-				if(self.board[row+1][column] is 0):
-					moves.append((row+1, column))
-				if (piece.moved is 0):
-					moves.append((row+2, column))
-				if (column > 0):
-					if (self.board[row+1][column-1] is not 0
-						and self.pieces[self.board[row+1][column-1]].color is "white"):
-						moves.append((row+1, column-1))
-				if (column < 7):
-					if (self.board[row+1][column+1] is not 0
-						and self.pieces[self.board[row+1][column+1]].color is "white"):
-						moves.append((row+1, column+1))
+	def getNeighbours():
+		pass
 
-			if (piece.color is "white"):
-				if(self.board[row-1][column] is 0):
-					moves.append((row-1, column))
-				if (piece.moved is 0):
-					moves.append((row-2, column))
-				if (column > 0):
-					if (self.board[row-1][column-1] is not 0
-						and self.pieces[self.board[row-1][column-1]].color is "black"):
-						moves.append((row-1, column-1))
-				if (column < 7):
-					if (self.board[row-1][column+1] is not 0
-						and self.pieces[self.board[row-1][column+1]].color is "black"):
-						moves.append((row-1, column+1))
-
-		final = list()
-		for item in moves:
-			row = item[0]
-			column = item[1]
-			if (row > 7 or row < 0 or column > 7 or column < 0):
-				pass
-			elif(self.board[row][column] is 0):
-				final.append(item)
-			elif (self.pieces[self.board[row][column]].color is piece.color):
-				pass
-			else:
-				final.append(item)
-
-		print final
-
-		return final

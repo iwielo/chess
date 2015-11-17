@@ -5,7 +5,6 @@ from chessboard import BoardState
 class GameBoard(tk.Frame):
     def __init__(self, parent, size=70):
         self.size = size
-        self.turn = True #true for white, false for black
         self.board_state = BoardState()
         self.move_data = {"x": 0, "y": 0, "item": None}
         self.counter = 2
@@ -27,7 +26,7 @@ class GameBoard(tk.Frame):
 
     def OnPieceMotion(self, event):
         counter = self.move_data["item"]
-        if (counter < 2 or not self.CheckTurn()):
+        if (counter < 2):
             return
         
         delta_x = event.x - self.move_data["x"]
@@ -38,7 +37,7 @@ class GameBoard(tk.Frame):
 
     def OnPieceButtonRelease(self, event):
         counter = self.move_data["item"]
-        if (counter < 2 or not self.CheckTurn()):
+        if (counter < 2):
             return
 
         startrow = self.board_state.pieces[counter].coords[0]
@@ -47,31 +46,15 @@ class GameBoard(tk.Frame):
         endrow = int(self.move_data["y"]/self.size)
         endcolumn = int(self.move_data["x"]/self.size)
 
-        if (endrow < 0 or endcolumn <0 or endcolumn > 7 or endrow >7
-        or endrow is startrow and endcolumn is startcolumn):
-            self.MovePiece(counter, startrow, startcolumn)
-            return
+        valid, occupied = self.board_state.Move(startrow, startcolumn, endrow, endcolumn)
 
-        occupied = self.board_state.board[endrow][endcolumn]
-
-        if (self.board_state.Move(startrow, startcolumn, endrow, endcolumn)):
+        if (valid is not False):
             if (occupied  is not 0):
-                self.canvas.delete(occupied)
-                del self.board_state.pieces[occupied] 
+                self.canvas.delete(occupied) 
             self.MovePiece(counter, endrow, endcolumn)
-            self.board_state.pieces[counter].moved+=1
-            self.turn = True if self.turn is False else False
+            self.board_state = valid
         else:
             self.MovePiece(counter, startrow, startcolumn)
-
-    def CheckTurn(self):
-        counter = self.move_data["item"]
-        color = self.board_state.pieces[counter].color
-        if (self.turn is True and color is "black"):
-            return False
-        if (self.turn is False and color is "white"):
-            return False
-        return True
 
     def AddPiece(self, piece, row=0, column=0):
         if (self.board_state.board[row][column] is not 0):
