@@ -6,7 +6,6 @@ def MakeMove(board_state, gameboard):
 	board_state.getNeighbours()
 	options = board_state.children
 	print len(options)
-	print board_state.turn
 	move = options.pop()
 	gameboard.UserMove(move.startrow, move.startcolumn, move.endrow, move.endcolumn)
 

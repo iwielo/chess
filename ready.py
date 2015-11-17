@@ -71,7 +71,7 @@ class GameBoard(tk.Frame):
             return
         else:
             piece.number = self.order
-            self.order +=1 
+            self.order += 1 
 
             self.board_state.pieces[piece.number] = piece
             self.board_state.board[row][column] = piece.number

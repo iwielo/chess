@@ -63,5 +63,5 @@ class BoardState():
 						neighbour= self.MakeNeighbour(row, column, newrow, newcolumn)
 						self.children.add(neighbour)
 
-		print len(self.children)
+		#print len(self.children)
 
