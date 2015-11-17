@@ -2,12 +2,14 @@ import Tkinter as tk
 from PIL import Image, ImageTk
 from piece import Piece
 from chessboard import BoardState
+import ai
 class GameBoard(tk.Frame):
     def __init__(self, parent, size=70):
         self.size = size
         self.board_state = BoardState()
         self.move_data = {"x": 0, "y": 0, "item": None}
-        self.counter = 2
+        self.order = 2
+        self.images = list()
 
         tk.Frame.__init__(self, parent)
         self.canvas = tk.Canvas(self, width=8*size, height=8*size)
@@ -42,14 +44,14 @@ class GameBoard(tk.Frame):
 
         startrow = self.board_state.pieces[counter].coords[0]
         startcolumn = self.board_state.pieces[counter].coords[1]
-        print startrow
-        print startcolumn
-
 
         endrow = int(self.move_data["y"]/self.size)
         endcolumn = int(self.move_data["x"]/self.size)
+        self.UserMove(startrow, startcolumn, endrow, endcolumn)
 
+    def UserMove(self, startrow, startcolumn, endrow, endcolumn):
         valid, occupied = self.board_state.Move(startrow, startcolumn, endrow, endcolumn)
+        counter = self.board_state.board[startrow][startcolumn]
 
         if (valid is not False):
             if (occupied  is not 0):
@@ -59,16 +61,25 @@ class GameBoard(tk.Frame):
         else:
             self.MovePiece(counter, startrow, startcolumn)
 
+        #if (self.board_state.turn is "black"):
+
+
     def AddPiece(self, piece, row=0, column=0):
         if (self.board_state.board[row][column] is not 0):
             print "you cannot add a piece here"
             return
         else:
-            piece.number = self.counter
-            self.counter +=1 
+            piece.number = self.order
+            self.order +=1 
+
             self.board_state.pieces[piece.number] = piece
             self.board_state.board[row][column] = piece.number
-            self.canvas.create_image(0,0, image=piece.image, tags=(piece.number, "piece"), anchor="c")
+
+            image = ImageTk.PhotoImage(file = piece.path)
+            self.images.append(image)
+
+            self.canvas.create_image(0,0, image=image, tags=(piece.number, "piece"), anchor="c")
+            self.canvas.tag_raise(piece.number)
             self.MovePiece(piece.number, row, column)
             self.board_state.pieces[piece.number].coords = (row,column)
 
@@ -83,7 +94,11 @@ class GameBoard(tk.Frame):
         if (piece.type is "pawn"):
             if (piece.color is "black" and row is 7
             or piece.color is "white" and row is 0):
-                self.canvas.itemconfig(counter, image = piece.ChangePawnToQueen())
+                piece.type = "queen"
+                path = piece.color + "_queen" + ".gif"
+                image = ImageTk.PhotoImage(file = path)
+                self.images.append(image)
+                self.canvas.itemconfig(counter, image = image )
 
 
     def FillBoard(self):

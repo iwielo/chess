@@ -10,14 +10,11 @@ class BoardState():
 		self.children = set()
 
 	def Move(self, startrow, startcolumn, endrow, endcolumn):
-		#self.getNeighbours()
 		if (endrow < 0 or endcolumn <0 or endcolumn > 7 or endrow >7 or endrow is startrow and endcolumn is startcolumn):
 			return False, 0
 
 		if ((endrow, endcolumn) not in movements.GetValidMovements(self, startrow, startcolumn)):
 			return False, 0
-
-		#movements.GetValidMovements(self,startrow,startcolumn)
 
 		startsquare = self.board[startrow][startcolumn]
 		endsquare = self.board[endrow][endcolumn]
@@ -26,33 +23,34 @@ class BoardState():
 		if (color is not self.turn):
 			return False, 0
 
-		neighbour = self.makeNeighbour(startrow, startcolumn, endrow, endcolumn)
+		neighbour = self.MakeNeighbour(startrow, startcolumn, endrow, endcolumn)
 
 		return neighbour, endsquare
 
-	def makeNeighbour(self, startrow, startcolumn, endrow, endcolumn):
+	def MakeNeighbour(self, startrow, startcolumn, endrow, endcolumn):
 
 		startsquare = self.board[startrow][startcolumn]
 		endsquare = self.board[endrow][endcolumn]
 
 		neighbour = BoardState()
-		#neighbour.parent = self
+		neighbour.parent = self
 		neighbour.board = copy.deepcopy(self.board)
-		neighbour.pieces = self.pieces.copy()
+		neighbour.pieces = copy.deepcopy(self.pieces)
 		neighbour.turn = "black" if self.turn is "white" else "white"
 		neighbour.board[startrow][startcolumn] = 0
 		neighbour.board[endrow][endcolumn] = startsquare
-		neighbour.pieces[startsquare].moved+=1
+		neighbour.pieces[startsquare].moved += 1
 		neighbour.pieces[startsquare].coords = (endrow, endcolumn)
 
-		#if (endsquare is not 0):
-		#	del neighbour.pieces[endsquare]
+		neighbour.startrow = startrow
+		neighbour.startcolumn = startcolumn
+		neighbour.endrow = endrow
+		neighbour.endcolumn = endcolumn
 
-		#print len(neighbour.pieces)
-		#print neighbour.board
+		if (endsquare is not 0):
+			del neighbour.pieces[endsquare]
 
 		return neighbour
-
 
 	def getNeighbours(self):
 		for row in range (0,8):
@@ -60,11 +58,10 @@ class BoardState():
 				piece = self.board[row][column]
 				if (piece > 1 and self.pieces[piece].color is self.turn):
 					for move in movements.GetValidMovements(self, row, column):
-						print move
 						newrow = move[0]
 						newcolumn = move[1]
-						#neighbour= self.makeNeighbour(row, column, newrow, newcolumn)
-						self.children.add(BoardState())
+						neighbour= self.MakeNeighbour(row, column, newrow, newcolumn)
+						self.children.add(neighbour)
 
 		print len(self.children)
 
