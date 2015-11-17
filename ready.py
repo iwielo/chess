@@ -42,6 +42,9 @@ class GameBoard(tk.Frame):
 
         startrow = self.board_state.pieces[counter].coords[0]
         startcolumn = self.board_state.pieces[counter].coords[1]
+        print startrow
+        print startcolumn
+
 
         endrow = int(self.move_data["y"]/self.size)
         endcolumn = int(self.move_data["x"]/self.size)
@@ -51,8 +54,8 @@ class GameBoard(tk.Frame):
         if (valid is not False):
             if (occupied  is not 0):
                 self.canvas.delete(occupied) 
-            self.MovePiece(counter, endrow, endcolumn)
             self.board_state = valid
+            self.MovePiece(counter, endrow, endcolumn)
         else:
             self.MovePiece(counter, startrow, startcolumn)
 
@@ -67,9 +70,9 @@ class GameBoard(tk.Frame):
             self.board_state.board[row][column] = piece.number
             self.canvas.create_image(0,0, image=piece.image, tags=(piece.number, "piece"), anchor="c")
             self.MovePiece(piece.number, row, column)
+            self.board_state.pieces[piece.number].coords = (row,column)
 
     def MovePiece(self, counter, row, column):
-        self.board_state.pieces[counter].coords = (row,column)
         x0 = (column * self.size) + self.size/2
         y0 = (row * self.size) + self.size/2
         self.canvas.coords(counter, x0, y0)
