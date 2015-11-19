@@ -28,11 +28,13 @@ class BoardState():
 		return neighbour, endsquare
 
 	def MakeNeighbour(self, startrow, startcolumn, endrow, endcolumn):
+		print self.IsKingInCheck()
 
 		startsquare = self.board[startrow][startcolumn]
 		endsquare = self.board[endrow][endcolumn]
 
 		neighbour = BoardState()
+
 		neighbour.parent = self
 		neighbour.board = copy.deepcopy(self.board)
 		neighbour.pieces = copy.deepcopy(self.pieces)
@@ -41,7 +43,6 @@ class BoardState():
 		neighbour.board[endrow][endcolumn] = startsquare
 		neighbour.pieces[startsquare].moved += 1
 		neighbour.pieces[startsquare].coords = (endrow, endcolumn)
-
 		neighbour.startrow = startrow
 		neighbour.startcolumn = startcolumn
 		neighbour.endrow = endrow
@@ -63,5 +64,27 @@ class BoardState():
 						neighbour= self.MakeNeighbour(row, column, newrow, newcolumn)
 						self.children.add(neighbour)
 
-		#print len(self.children)
+		return self.children
 
+	def getHeuristic(self):
+		from random import randint
+		return randint(1,100)
+
+	def toString(self):
+		a = ""
+		for row in range (0,8):
+			for column in range (0,8):
+				piece = self.board[row][column]
+				if (piece > 1):
+					a += self.pieces[piece].color + self.pieces[piece].type
+				else:
+					a += "0"
+		return a
+
+	def IsKingInCheck(self):
+		for row in range (0,8):
+			for column in range (0,8):
+				piece = self.board[row][column]
+				if (piece > 1):
+					if (self.pieces[piece].color is self.turn and self.pieces[piece].type is "king"):
+						return self.pieces[piece].coords

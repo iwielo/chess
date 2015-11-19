@@ -1,4 +1,4 @@
-def GetValidMovements(board_state, row, column):
+def GetValidMovements(board_state, row, column, check = False):
 		piece = board_state.pieces[board_state.board[row][column]]
 		moves = list()
 
@@ -76,32 +76,40 @@ def GetValidMovements(board_state, row, column):
 
 		elif(piece.type is "pawn"):
 			if (piece.color is "black"):
-				if(board_state.board[row+1][column] is 0):
-					moves.append((row+1, column))
-				if (piece.moved is 0 and board_state.board[row+1][column] is 0 ):
-					moves.append((row+2, column))
-				if (column > 0):
-					if (board_state.board[row+1][column-1] is not 0
-						and board_state.pieces[board_state.board[row+1][column-1]].color is "white"):
-						moves.append((row+1, column-1))
-				if (column < 7):
-					if (board_state.board[row+1][column+1] is not 0
-						and board_state.pieces[board_state.board[row+1][column+1]].color is "white"):
-						moves.append((row+1, column+1))
+				if (not check):
+					if(board_state.board[row+1][column] is 0):
+						moves.append((row+1, column))
+					if (piece.moved is 0 and board_state.board[row+1][column] is 0 ):
+						moves.append((row+2, column))
+					if (column > 0):
+						if (board_state.board[row+1][column-1] is not 0
+							and board_state.pieces[board_state.board[row+1][column-1]].color is "white"):
+							moves.append((row+1, column-1))
+					if (column < 7):
+						if (board_state.board[row+1][column+1] is not 0
+							and board_state.pieces[board_state.board[row+1][column+1]].color is "white"):
+							moves.append((row+1, column+1))
+				else:
+					moves.append((row+1, column-1))
+					moves.append((row+1, column+1))
 
 			if (piece.color is "white"):
-				if(board_state.board[row-1][column] is 0):
-					moves.append((row-1, column))
-				if (piece.moved is 0 and board_state.board[row-1][column] is 0):
-					moves.append((row-2, column))
-				if (column > 0):
-					if (board_state.board[row-1][column-1] is not 0
-						and board_state.pieces[board_state.board[row-1][column-1]].color is "black"):
-						moves.append((row-1, column-1))
-				if (column < 7):
-					if (board_state.board[row-1][column+1] is not 0
-						and board_state.pieces[board_state.board[row-1][column+1]].color is "black"):
-						moves.append((row-1, column+1))
+				if (not check):
+					if(board_state.board[row-1][column] is 0):
+						moves.append((row-1, column))
+					if (piece.moved is 0 and board_state.board[row-1][column] is 0):
+						moves.append((row-2, column))
+					if (column > 0):
+						if (board_state.board[row-1][column-1] is not 0
+							and board_state.pieces[board_state.board[row-1][column-1]].color is "black"):
+							moves.append((row-1, column-1))
+					if (column < 7):
+						if (board_state.board[row-1][column+1] is not 0
+							and board_state.pieces[board_state.board[row-1][column+1]].color is "black"):
+							moves.append((row-1, column+1))
+				else:
+					moves.append((row-1, column-1))
+					moves.append((row-1, column+1))
 
 		final = list()
 		for item in moves:
