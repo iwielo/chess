@@ -87,4 +87,4 @@ class BoardState():
 				piece = self.board[row][column]
 				if (piece > 1):
 					if (self.pieces[piece].color is self.turn and self.pieces[piece].type is "king"):
-						return self.pieces[piece].coords
+						if (self.pieces[piece].coords in self.getNeighbours())
