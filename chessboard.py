@@ -7,7 +7,6 @@ class BoardState():
 		self.pieces = {}
 		self.board = [[0 for x in range(8)] for x in range(8)] 
 		self.turn = turn
-		#self.children = set()
 
 	def Move(self, startrow, startcolumn, endrow, endcolumn):
 		if (endrow < 0 or endcolumn <0 or endcolumn > 7 or endrow >7 or endrow is startrow and endcolumn is startcolumn):
@@ -31,8 +30,6 @@ class BoardState():
 		return neighbour, endsquare
 
 	def MakeNeighbour(self, startrow, startcolumn, endrow, endcolumn):
-		#print self.IsKingInCheck()
-
 		startsquare = self.board[startrow][startcolumn]
 		endsquare = self.board[endrow][endcolumn]
 
@@ -90,7 +87,6 @@ class BoardState():
 						newcolumn = move[1]
 						moves.append((newrow, newcolumn))
 
-		#print king_coords
 		if (king_coords not in moves):
 			return False
 		else:

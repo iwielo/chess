@@ -3,7 +3,7 @@ from PIL import Image, ImageTk
 from piece import Piece
 from chessboard import BoardState
 import ai
-
+import sys
 
 class GameBoard(tk.Frame):
     def __init__(self, parent, size=70):
@@ -62,6 +62,10 @@ class GameBoard(tk.Frame):
             self.MovePiece(counter, endrow, endcolumn)
         else:
             self.MovePiece(counter, startrow, startcolumn)
+
+        if (self.board_state.isCheckMate(self.board_state.getNeighbours())):
+            print (self.board_state.turn + " loses")
+            sys.exit()
 
         if (self.board_state.turn is "black"):
             ai.MakeMove(self.board_state, self)
