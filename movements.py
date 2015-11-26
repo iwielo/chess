@@ -15,9 +15,9 @@ def GetValidMovements(board_state, row, column, check = False):
 		if (piece.type is "king"):
 			moves.append((row+1, column+1))
 			moves.append((row+1, column-1))
-			moves.append((row+1, column))
 			moves.append((row-1, column+1))
 			moves.append((row-1, column-1))
+			moves.append((row+1, column))
 			moves.append((row-1, column))
 			moves.append((row, column-1))
 			moves.append((row, column+1))

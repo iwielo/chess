@@ -7,7 +7,7 @@ class BoardState():
 		self.pieces = {}
 		self.board = [[0 for x in range(8)] for x in range(8)] 
 		self.turn = turn
-		self.children = set()
+		#self.children = set()
 
 	def Move(self, startrow, startcolumn, endrow, endcolumn):
 		if (endrow < 0 or endcolumn <0 or endcolumn > 7 or endrow >7 or endrow is startrow and endcolumn is startcolumn):
@@ -25,10 +25,13 @@ class BoardState():
 
 		neighbour = self.MakeNeighbour(startrow, startcolumn, endrow, endcolumn)
 
+		if (neighbour.isKingInCheck(self.turn)):
+			return False, 0
+
 		return neighbour, endsquare
 
 	def MakeNeighbour(self, startrow, startcolumn, endrow, endcolumn):
-		print self.IsKingInCheck()
+		#print self.IsKingInCheck()
 
 		startsquare = self.board[startrow][startcolumn]
 		endsquare = self.board[endrow][endcolumn]
@@ -54,6 +57,7 @@ class BoardState():
 		return neighbour
 
 	def getNeighbours(self):
+		children = set()
 		for row in range (0,8):
 			for column in range (0,8):
 				piece = self.board[row][column]
@@ -62,9 +66,37 @@ class BoardState():
 						newrow = move[0]
 						newcolumn = move[1]
 						neighbour= self.MakeNeighbour(row, column, newrow, newcolumn)
-						self.children.add(neighbour)
+						children.add(neighbour)
 
-		return self.children
+		return children
+
+	def isCheckMate(self, children):
+		for child in children:
+			if(not child.isKingInCheck(self.turn)):
+				return False
+		return True
+
+	def isKingInCheck(self, color):
+		moves = list()
+		king_coords = (0,0)
+		for row in range (0,8):
+			for column in range (0,8):
+				piece = self.board[row][column]
+				if (piece > 1 and self.pieces[piece].type is "king" and self.pieces[piece].color is color):
+					king_coords = self.pieces[piece].coords
+				if (piece > 1 and self.pieces[piece].color is not color):
+					for move in movements.GetValidMovements(self, row, column, check = True):
+						newrow = move[0]
+						newcolumn = move[1]
+						moves.append((newrow, newcolumn))
+
+		#print king_coords
+		if (king_coords not in moves):
+			return False
+		else:
+			return True
+
+
 
 	def getHeuristic(self):
 		from random import randint
@@ -81,10 +113,3 @@ class BoardState():
 					a += "0"
 		return a
 
-	def IsKingInCheck(self):
-		for row in range (0,8):
-			for column in range (0,8):
-				piece = self.board[row][column]
-				if (piece > 1):
-					if (self.pieces[piece].color is self.turn and self.pieces[piece].type is "king"):
-						if (self.pieces[piece].coords in self.getNeighbours())

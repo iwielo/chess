@@ -3,6 +3,8 @@ from PIL import Image, ImageTk
 from piece import Piece
 from chessboard import BoardState
 import ai
+
+
 class GameBoard(tk.Frame):
     def __init__(self, parent, size=70):
         self.size = size
@@ -128,6 +130,7 @@ class GameBoard(tk.Frame):
 
 def setup():
     root = tk.Tk()
+    testxxx = root
     root.resizable(width = False, height = False)
     board = GameBoard(root)
     board.pack(side="top", fill="both", expand="true")
