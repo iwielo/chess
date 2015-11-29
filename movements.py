@@ -79,7 +79,7 @@ def GetValidMovements(board_state, row, column, check = False):
 				if (not check):
 					if(board_state.board[row+1][column] is 0):
 						moves.append((row+1, column))
-					if (piece.moved is 0 and board_state.board[row+1][column] is 0 ):
+					if (piece.moved is 0 and board_state.board[row+2][column] is 0 ):
 						moves.append((row+2, column))
 					if (column > 0):
 						if (board_state.board[row+1][column-1] is not 0
@@ -97,7 +97,7 @@ def GetValidMovements(board_state, row, column, check = False):
 				if (not check):
 					if(board_state.board[row-1][column] is 0):
 						moves.append((row-1, column))
-					if (piece.moved is 0 and board_state.board[row-1][column] is 0):
+					if (piece.moved is 0 and board_state.board[row-2][column] is 0):
 						moves.append((row-2, column))
 					if (column > 0):
 						if (board_state.board[row-1][column-1] is not 0

@@ -7,6 +7,9 @@ class BoardState():
 		self.pieces = {}
 		self.board = [[0 for x in range(8)] for x in range(8)] 
 		self.turn = turn
+		self.possible = 0
+		self.children = list()
+		self.heuristic = 0
 
 	def Move(self, startrow, startcolumn, endrow, endcolumn):
 		if (endrow < 0 or endcolumn <0 or endcolumn > 7 or endrow >7 or endrow is startrow and endcolumn is startcolumn):
@@ -24,7 +27,7 @@ class BoardState():
 
 		neighbour = self.MakeNeighbour(startrow, startcolumn, endrow, endcolumn)
 
-		if (neighbour.isKingInCheck(self.turn)):
+		if (self.turn is "white" and neighbour.isKingInCheck(self.turn)):
 			return False, 0
 
 		return neighbour, endsquare
@@ -54,21 +57,26 @@ class BoardState():
 		return neighbour
 
 	def getNeighbours(self):
-		children = set()
-		for row in range (0,8):
-			for column in range (0,8):
-				piece = self.board[row][column]
-				if (piece > 1 and self.pieces[piece].color is self.turn):
-					for move in movements.GetValidMovements(self, row, column):
-						newrow = move[0]
-						newcolumn = move[1]
-						neighbour= self.MakeNeighbour(row, column, newrow, newcolumn)
-						children.add(neighbour)
+		if (len(self.children) is not 0):
+			return self.children
+		else:
+			children = set()
+			for row in range (0,8):
+				for column in range (0,8):
+					piece = self.board[row][column]
+					if (piece > 1 and self.pieces[piece].color is self.turn):
+						for move in movements.GetValidMovements(self, row, column):
+							newrow = move[0]
+							newcolumn = move[1]
+							neighbour= self.MakeNeighbour(row, column, newrow, newcolumn)
+							if (not neighbour.isKingInCheck(self.turn)):
+								children.add(neighbour)
+			self.possible = len(children)
+			self.children = children
+			return children
 
-		return children
-
-	def isCheckMate(self, children):
-		for child in children:
+	def isCheckMate(self):
+		for child in self.getNeighbours():
 			if(not child.isKingInCheck(self.turn)):
 				return False
 		return True
@@ -93,10 +101,55 @@ class BoardState():
 			return True
 
 
+	def getPieces(self):
+		white = 0
+		black = 0
+
+		for row in range (0,8):
+			for column in range (0,8):
+				piece = self.board[row][column]
+				if (piece > 1 and self.pieces[piece].color is "white"):
+					kind = self.pieces[piece].type
+					if (kind is "pawn"):
+						white += 1
+					elif (kind is "queen"):
+						white += 20
+					elif (kind is "rook"):
+						white += 5
+					elif (kind is "bishop"):
+						white += 3
+					elif (kind is "knight"):
+						white += 3
+
+				elif (piece > 1 and self.pieces[piece].color is "black"):
+					kind = self.pieces[piece].type
+					if (kind is "pawn"):
+						black += 1
+					elif (kind is "queen"):
+						black += 20
+					elif (kind is "rook"):
+						black += 5
+					elif (kind is "bishop"):
+						black += 3
+					elif (kind is "knight"):
+						black += 3
+
+		if (self.turn is "white" and self.isCheckMate()):
+			black += 10000
+		if (self.turn is "black" and self.isCheckMate()):
+			white += 10000
+
+		#print white
+		#print black
+		return (black-white)
+
 
 	def getHeuristic(self):
-		from random import randint
-		return randint(1,100)
+		if (self.heuristic is not 0):
+			return self.heuristic
+		else:
+			self.heuristic = self.getPieces()
+			return self.heuristic
 
 	def toString(self):
 		a = ""

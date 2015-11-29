@@ -63,12 +63,12 @@ class GameBoard(tk.Frame):
         else:
             self.MovePiece(counter, startrow, startcolumn)
 
-        if (self.board_state.isCheckMate(self.board_state.getNeighbours())):
+        if (self.board_state.isCheckMate()):
             print (self.board_state.turn + " loses")
             sys.exit()
 
         if (self.board_state.turn is "black"):
-            ai.MakeMove(self.board_state, self)
+            ai.MakeMove(self.board_state, self)     
 
 
     def AddPiece(self, piece, row=0, column=0):
@@ -149,4 +149,3 @@ def setup():
 
 if __name__ == "__main__":
     setup()
-
