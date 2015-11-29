@@ -134,9 +134,9 @@ class BoardState():
 					elif (kind is "knight"):
 						black += 3
 
-		if (self.turn is "white" and self.isCheckMate()):
+		if (self.turn is "white" and self. isKingInCheck("white") and self.isCheckMate()):
 			black += 10000
-		if (self.turn is "black" and self.isCheckMate()):
+		if (self.turn is "black" and self. isKingInCheck("black") and self.isCheckMate()):
 			white += 10000
 
 		#print white
