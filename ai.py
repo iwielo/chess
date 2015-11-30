@@ -14,24 +14,23 @@ def MakeMove(board_state, gameboard):
 	gameboard.UserMove(move.startrow, move.startcolumn, move.endrow, move.endcolumn)
 
 
+
 	end = time.time()
-	print end - start
+	print str(end - start) + " seconds"
 
 
 def abSearch(board_state):
-	options = board_state.getNeighbours()
+	#options = board_state.getNeighbours()
 
 
-	for option in options:
-		option.getHeuristic()
-
-	v = maxValue(board_state, -sys.maxint-1, sys.maxint, 2)
+	v = maxValue(board_state, -999999, 999999, 2)
 	print v
-	for option in options:
-		#print option.getHeuristic()
-		if (option.getHeuristic() is v):
-			return option
+	for option in board_state.getNeighbours():
+		for option2 in option.getNeighbours():
+			if (option2.getHeuristic() is v):
+				return option
 
+	#print "oops"
 	return options.pop()
 
 
@@ -39,11 +38,10 @@ def maxValue(board_state, a, b, depth):
 	if (depth is 0):
 		return board_state.getHeuristic()
 	
-	v = -sys.maxint-1
+	v = -999999
 	for neighbour in board_state.getNeighbours():
 		v = max(v, minValue(neighbour, a, b, depth-1))
 		if (v >= b):
-			print "prune"
 			return v
 		a = max(a, v)
 	return v
@@ -52,11 +50,10 @@ def minValue(board_state, a, b, depth):
 	if (depth is 0):
 		return board_state.getHeuristic()
 	
-	v = sys.maxint
+	v = 999999
 	for neighbour in board_state.getNeighbours():
 		v = min(v, maxValue(neighbour, a, b, depth-1))
 		if (v <= a):
-			print "prune"
 			return v
 		b = min(b, v)
 	return v

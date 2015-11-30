@@ -134,7 +134,6 @@ class GameBoard(tk.Frame):
 
 def setup():
     root = tk.Tk()
-    testxxx = root
     root.resizable(width = False, height = False)
     board = GameBoard(root)
     board.pack(side="top", fill="both", expand="true")
