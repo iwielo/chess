@@ -7,11 +7,11 @@ class BoardState():
 		self.pieces = {}
 		self.board = [[0 for x in range(8)] for x in range(8)] 
 		self.turn = turn
-		self.possible = 0
 		self.children = list()
 		self.heuristic = 0
 
 	def Move(self, startrow, startcolumn, endrow, endcolumn):
+		'''This method checks if the move is valid and then creates a new BoardState'''
 		if (endrow < 0 or endcolumn <0 or endcolumn > 7 or endrow >7 or endrow is startrow and endcolumn is startcolumn):
 			return False, 0
 
@@ -27,13 +27,13 @@ class BoardState():
 
 		neighbour = self.MakeNeighbour(startrow, startcolumn, endrow, endcolumn)
 
-		if (self.turn is "white" and neighbour.isKingInCheck(self.turn)):
+		if (self.turn is "white" and neighbour.IsKingInCheck(self.turn)):
 			return False, 0
 
-		#print neighbour.getHeuristic()
 		return neighbour, endsquare
 
 	def MakeNeighbour(self, startrow, startcolumn, endrow, endcolumn):
+		'''This method generates the new boardstate based on the current one'''
 		startsquare = self.board[startrow][startcolumn]
 		endsquare = self.board[endrow][endcolumn]
 
@@ -57,7 +57,8 @@ class BoardState():
 
 		return neighbour
 
-	def getNeighbours(self):
+	def GetNeighbours(self):
+		'''This method gets all the possible movements for a given state'''
 		if (len(self.children) is not 0):
 			return self.children
 		else:
@@ -70,19 +71,20 @@ class BoardState():
 							newrow = move[0]
 							newcolumn = move[1]
 							neighbour= self.MakeNeighbour(row, column, newrow, newcolumn)
-							if (not neighbour.isKingInCheck(self.turn)):
+							if (not neighbour.IsKingInCheck(self.turn)):
 								children.add(neighbour)
-			self.possible = len(children)
 			self.children = children
 			return children
 
-	def isCheckMate(self):
-		for child in self.getNeighbours():
-			if(not child.isKingInCheck(self.turn)):
+	def IsCheckmate(self):
+		'''Scans all the neighbours - if every neighbouring state is in check, the game ends'''
+		for child in self.GetNeighbours():
+			if(not child.IsKingInCheck(self.turn)):
 				return False
 		return True
 
-	def isKingInCheck(self, color):
+	def IsKingInCheck(self, color):
+		'''Very simple - if the position of the king is on a spot that can be attacked, he is in check'''
 		moves = list()
 		king_coords = (0,0)
 		for row in range (0,8):
@@ -101,9 +103,8 @@ class BoardState():
 		else:
 			return True
 
-
-
 	def getPieces(self):
+		'''This method helps us evaluate the value of each state to help the AI decide what to do'''
 		white = 0
 		black = 0
 
@@ -111,9 +112,10 @@ class BoardState():
 			for column in range (0,8):
 				piece = self.board[row][column]
 				if (piece > 1):
-					if (self.pieces[piece].color is "white"):
-						kind = self.pieces[piece].type
-						white += values(self.pieces[piece])
+					piece = self.pieces[piece]
+					if (piece.color is "white"):
+						kind = piece.type
+						white += piece.values()
 						if (kind is "pawn"):
 							white += 100
 						elif (kind is "queen"):
@@ -126,8 +128,8 @@ class BoardState():
 							white += 320
 
 					else :
-						kind = self.pieces[piece].type
-						black += values(self.pieces[piece])
+						kind = piece.type
+						black += piece.values()
 						if (kind is "pawn"):
 							black += 100
 						elif (kind is "queen"):
@@ -139,59 +141,18 @@ class BoardState():
 						elif (kind is "knight"):
 							black += 320
 
-		if (self.turn is "white" and self. isKingInCheck("white") and self.isCheckMate()):
+		if (self.turn is "white" and self. IsKingInCheck("white") and self.IsCheckmate()):
 			black += 10000
-		if (self.turn is "black" and self. isKingInCheck("black") and self.isCheckMate()):
+		if (self.turn is "black" and self. IsKingInCheck("black") and self.IsCheckmate()):
 			white += 10000
 
 		return black-white
 
 
 	def getHeuristic(self):
+		'''Returns the value of the boardstate'''
 		if (self.heuristic is not 0):
 			return self.heuristic
 		else:
 			self.heuristic = self.getPieces()
 			return self.heuristic
-
-def chunks(l):
-    """Yield successive n-sized chunks from l."""
-    for i in xrange(0, len(l), 8):
-        yield l[i:i+8]
-
-def values(piece):
-		color = piece.color
-		kind = piece.type
-		row = piece.coords[0]
-		column = piece.coords[1]
-
-
-		white_pawn = [0, 0, 0, 0, 0, 0, 0, 0, 50, 50, 50, 50, 50, 50, 50, 50, 10, 10, 20, 30, 30, 20, 10, 10, 5, 5, 10, 25, 25, 10, 5, 5, 0, 0, 0, 20, 20, 0, 0, 0, 5, -5,-10, 0, 0,-10, -5, 5, 5, 10, 10,-20,-20, 10, 10, 5, 0, 0, 0, 0, 0, 0, 0, 0]
-		white_knight = [-50,-40,-30,-30,-30,-30,-40,-50, -40,-20, 0, 0, 0, 0,-20,-40, -30, 0, 10, 15, 15, 10, 0,-30, -30, 5, 15, 20, 20, 15, 5,-30, -30, 0, 15, 20, 20, 15, 0,-30, -30, 5, 10, 15, 15, 10, 5,-30, -40,-20, 0, 5, 5, 0,-20,-40, -50,-40,-30,-30,-30,-30,-40,-50]
-		white_bishop = [-20,-10,-10,-10,-10,-10,-10,-20, -10, 0, 0, 0, 0, 0, 0,-10, -10, 0, 5, 10, 10, 5, 0,-10, -10, 5, 5, 10, 10, 5, 5,-10, -10, 0, 10, 10, 10, 10, 0,-10, -10, 10, 10, 10, 10, 10, 10,-10, -10, 5, 0, 0, 0, 0, 5,-10, -20,-10,-10,-10,-10,-10,-10,-20]
-		white_rook = [0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 10, 10, 10, 10, 10, 5, -5, 0, 0, 0, 0, 0, 0, -5, -5, 0, 0, 0, 0, 0, 0, -5, -5, 0, 0, 0, 0, 0, 0, -5, -5, 0, 0, 0, 0, 0, 0, -5, -5, 0, 0, 0, 0, 0, 0, -5, 0, 0, 0, 5, 5, 0, 0, 0]
-		white_queen = [-20,-10,-10, -5, -5,-10,-10,-20, -10, 0, 0, 0, 0, 0, 0,-10, -10, 0, 5, 5, 5, 5, 0,-10, -5, 0, 5, 5, 5, 5, 0, -5, 0, 0, 5, 5, 5, 5, 0, -5, -10, 5, 5, 5, 5, 5, 0,-10, -10, 0, 5, 0, 0, 0, 0,-10, -20,-10,-10, -5, -5,-10,-10,-20]
-		white_king = [-30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -20,-30,-30,-40,-40,-30,-30,-20, -10,-20,-20,-20,-20,-20,-20,-10, 20, 20, 0, 0, 0, 0, 20, 20, 20, 30, 10, 0, 0, 10, 30, 20]
-		
-		black_pawn  = white_pawn[::-1]
-		black_knight= white_knight[::-1]
-		black_bishop = white_bishop[::-1]
-		black_rook = white_rook[::-1]
-		black_queen = white_queen[::-1]
-		black_king= white_king[::-1]
-
-		values = {
-		"white_pawn": list(chunks(white_pawn)), 
-		"white_knight": list(chunks(white_knight)), 
-		"white_bishop": list(chunks(white_bishop)), 
-		"white_rook": list(chunks(white_rook)), 
-		"white_queen": list(chunks(white_queen)), 
-		"white_king": list(chunks(white_king)),
-		"black_pawn": list(chunks(black_pawn)), 
-		"black_knight": list(chunks(black_knight)), 
-		"black_bishop": list(chunks(black_bishop)), 
-		"black_rook": list(chunks(black_rook)), 
-		"black_queen": list(chunks(black_queen)), 
-		"black_king": list(chunks(black_king))}
-
-		return values[color+"_"+kind][row][column]

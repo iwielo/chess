@@ -1,4 +1,8 @@
 def GetValidMovements(board_state, row, column, check = False):
+		'''Gets all the valid movements for the piece with the specified coordinates'''
+		#Because the pawn's attacks and moves are different, I put a flag to facilitate the generation of valid moves
+
+
 		piece = board_state.pieces[board_state.board[row][column]]
 		moves = list()
 

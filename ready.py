@@ -63,7 +63,7 @@ class GameBoard(tk.Frame):
         else:
             self.MovePiece(counter, startrow, startcolumn)
 
-        if (self.board_state.isCheckMate()):
+        if (self.board_state.IsCheckmate()):
             print (self.board_state.turn + " loses")
             sys.exit()
 
@@ -102,7 +102,7 @@ class GameBoard(tk.Frame):
             if (piece.color is "black" and row is 7
             or piece.color is "white" and row is 0):
                 piece.type = "queen"
-                path = piece.color + "_queen" + ".gif"
+                path = "res/" + piece.color + "_queen" + ".gif"
                 image = ImageTk.PhotoImage(file = path)
                 self.images.append(image)
                 self.canvas.itemconfig(counter, image = image )
@@ -138,7 +138,7 @@ def setup():
     board = GameBoard(root)
     board.pack(side="top", fill="both", expand="true")
 
-    path = "chessboard.jpg"
+    path = "res/chessboard.jpg"
     chessboard = Image.open(path)
     chessboard = chessboard.resize((board.size*8, board.size*8), Image.ANTIALIAS)
     chessboard = ImageTk.PhotoImage(chessboard)

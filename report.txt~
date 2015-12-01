@@ -1,0 +1,33 @@
+IMPORTANT:
+in order to run the program, please install the following python libs:
+Tkinter, PIL
+Sometimes a re-install of PIL is required
+software tested on ubuntu 14.04 and windows 10
+
+AFTER INSTALLING THE REQUIRED LIBS, RUN THE PROGRAM WITH
+
+python ready.py
+
+THIS WILL OPEN A GUI WITH A CHESSBOARD
+the HUMAN moves first(white)
+
+
+
+
+
+1. methodology:
+
+we get all the neighbours, remove the ones which put the king in check
+we perform minimax using the algorithm in the book (2 steps)
+
+the heuristic I decided to use is based on
+a) the values of the pieces
+b) the positions of the piece
+
+both the values and the specific positions can be found on this site:
+http://chessprogramming.wikispaces.com/Simplified+evaluation+function
+
+2. TIPS
+a)the program will end automatically when one of the kings is in a check mate
+b) please use the console to track the minimax values of every move
+c) the console will also output the time taken for each move
