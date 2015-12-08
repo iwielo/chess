@@ -5,11 +5,17 @@ from chessboard import BoardState
 import ai
 import sys
 
+'''
+wydzielic klase GameBoard do innego pliku, tutaj zostawic tylko funkcje setup()
+ustalic nazewnictwo, tak by nazwy plikow byly takie, jak nazwy klas ktore zawieraja
+'''
+
 class GameBoard(tk.Frame):
     def __init__(self, parent, size=70):
         self.size = size
         self.board_state = BoardState()
         self.move_data = {"x": 0, "y": 0, "item": None}
+        '''pole order mozna pominac, nie jest potrzebne do sprawdzenia, czy pole jest zajete'''
         self.order = 2
         self.images = list()
 
@@ -52,6 +58,11 @@ class GameBoard(tk.Frame):
         self.UserMove(startrow, startcolumn, endrow, endcolumn)
 
     def UserMove(self, startrow, startcolumn, endrow, endcolumn):
+        '''poczatek ciala funkcji uproscic do postaci:
+			if movements.validate_move(self.board_state, start, end):
+				self.board_state.MakeMove(start, end)
+				
+	'''
         valid, occupied = self.board_state.Move(startrow, startcolumn, endrow, endcolumn)
         counter = self.board_state.board[startrow][startcolumn]
 
@@ -72,6 +83,7 @@ class GameBoard(tk.Frame):
 
 
     def AddPiece(self, piece, row=0, column=0):
+        '''ponizsze sprawdzanie jest zbedne, funkcja sluzy tylko do poczatkowego wypelnienia pustej planszy'''
         if (self.board_state.board[row][column] is not 0):
             print "you cannot add a piece here"
             return
@@ -109,6 +121,17 @@ class GameBoard(tk.Frame):
 
 
     def FillBoard(self):
+        '''pozycje poczatkowe przeniesc poza klase jako liste:
+
+		init_positions = [
+                          ["black", "rook", 0,  0], 
+						  ...
+						]
+	
+        wtedy zostanie tu prosta petla:
+        for piece in initial_positions:
+            self.AddPiece(Piece(*piece))
+        '''
         for i in range(8):
             self.AddPiece(Piece("black", "pawn"), 1, i)
             self.AddPiece(Piece("white", "pawn"), 6, i)

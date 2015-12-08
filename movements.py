@@ -1,11 +1,58 @@
+'''
+		z funkcji wydzielic dwa slowniki: jeden do generacji listy ruchow:
+	
+			possible_moves = {
+		"type"+"color": [lista funkcji, ktore obliczaja mozliwe polozenia danej figury po wykonaniu ruchu ]
+									...
+									}
+		
+		np. dla krola:
+		
+		 king_deltas= list(itertools.product([-1,0,1], [-1,0,1]))
+		 king_deltas.remove((0,0))
+		
+		king_moves = [lambda l, k=k: [l[0] + k[0], l[1] + k[1]] for k in  king_deltas ]
+
+	dopisac funkcje sprawdzajace, czy dany ruch jest dozwolony, np:
+		
+	king_rules(board, initial_position, destination):
+		if gets_under_check(board, initial_position, destination):
+			return False
+		if goes_outside_board(board, initial_position, destination):
+			return False
+		if destination_occupied(board, initial_position, destination):
+			return False
+		return True
+	
+		odwolywac sie do nich poprzez slownik:
+		
+		validate_moves = {
+									"type"+"color": type_rules
+									....
+									}
+
+		odwolywac sie do nich poprzez funkcje:
+		
+		def validate_move(board, piece, destination):
+			return validate_moves[piece.type+piece.color](board, initial_position, destination)		
+		
+		wtedy funkcja przyjmie postac
+		
+		def GetValidMovements(board_state, piece, check = False):		
+			moves = [f(piece) for f in possible_moves]		
+			return list(itertools.ifilter(validate_move(board, piece), moves))
+		
+		dodatkowo, dopisac roszade, obecnie tego ruchu nie ma
+'''
+
+
 def GetValidMovements(board_state, row, column, check = False):
 		'''Gets all the valid movements for the piece with the specified coordinates'''
 		#Because the pawn's attacks and moves are different, I put a flag to facilitate the generation of valid moves
 
-
-		piece = board_state.pieces[board_state.board[row][column]]
+ 		piece = board_state.pieces[board_state.board[row][column]]
 		moves = list()
-
+		
 		if (piece.type is "knight"):
 			moves.append((row+2, column+1))
 			moves.append((row+2, column-1))
